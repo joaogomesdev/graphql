@@ -1,44 +1,34 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { gql, useQuery } from "@apollo/client";
+import { NewUserForm } from "./components/NewUserForm";
+
+export const GET_USERS = gql`
+  query { 
+    users { 
+      id 
+      name
+    }
+  }
+`
+
+type User = { 
+  id: string
+  name: string
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { data, loading } = useQuery<{ users: User[]}>(GET_USERS)
 
+  if (loading) {
+    return <p>Loading...</p>
+  }
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
+    <>
+      <ul>
+        {data?.users.map(user => <li key={user.id}>{user.name }</li>) }
+      </ul>
+      <NewUserForm />
+    </>
   )
 }
 
